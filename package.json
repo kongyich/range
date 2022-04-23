@@ -1,0 +1,21 @@
+{
+  "name": "range",
+  "version": "0.0.1",
+  "description": "A lightweight library of date components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "browser": "dist/index.js",
+  "keywords": [],
+  "author": "keyie",
+  "license": "ISC",
+  "devDependencies": {
+    "rollup": "^2.70.2",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3"
+  }
+}
