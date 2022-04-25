@@ -1,7 +1,4 @@
-import { getDate_format } from '../utils/index'
-// import { rg_getSecond } from '../utils/second'
-import { getDay } from '../utils/day'
-import { getYear } from '../utils/year'
+import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond } from '../utils/index'
 
 const now_day = new Date()
 /**
@@ -10,11 +7,6 @@ const now_day = new Date()
  * @param {string | function} format
  * @return {any}
  */
-
-// interface Type_options{
-//     distance?: number,
-//     format?: string | Function
-// }
 
 // enum dateType {
 //     second,
@@ -36,41 +28,36 @@ export const rg_getDate: Type_getDate = function (type, distance, format) {
         distance = undefined
     }
 
-    console.log(now_day)
     distance = distance || 0
 
-    let result: Array<number> = []
+    let result: string | number[]
 
     switch (type) {
         case 'second':
+            result = getSecond(now_day, distance, format)
             break
         case 'minute':
+            result = getMinute(now_day, distance, format)
             break
         case 'hour':
+            result = getHour(now_day, distance, format)
             break
         case 'day':
-            result = getDay(now_day, distance)
+            result = getDay(now_day, distance, format)
             break
         case 'month':
+            result = getMonth(now_day, distance, format)
             break
         case 'year':
-            result = getYear(now_day, distance)
+            result = getYear(now_day, distance, format)
             break
         case 'week':
+            result = getWeek(now_day, distance, format)
             break;
     }
 
     console.log(result, '<----result')
-
-    if (!format) {
-        return result
-    }
-
-    if (typeof format === 'string') {
-        format = getDate_format
-    }
-
-    return format(result)
+    return result
 }
 
 
