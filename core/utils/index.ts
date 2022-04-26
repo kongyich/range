@@ -1,6 +1,15 @@
 type Type_getNumDate = (now_day: Date, dis: number, format: string | Function | undefined) => string | number[]
 type Type_formater = (now_day: Date, date_ary: number[], format: string | Function) => string
 
+interface Params_deal_targetDate {
+    scope_type: string,
+    scope_date: string,
+    is_order: boolean,
+    target_type: string,
+    target_num: number
+}
+type Type_deal_targetDate = (options: Params_deal_targetDate) => string
+
 // return 格式化
 const getDate_format: Type_formater = function (now_day, date_ary, format) {
     if (typeof format === 'function') {
@@ -24,7 +33,7 @@ const getDate_format: Type_formater = function (now_day, date_ary, format) {
             }
 
         })
-        console.log(format, '<-----format')
+        // console.log(format, '<-----format')
         return format
     }
 }
@@ -119,4 +128,46 @@ export const getSecond: Type_getNumDate = function (now_day, dis, format) {
         return getDate_format(now_day, date_ary, format)
     }
     return date_ary
+}
+
+// 处理target子集
+export const deal_targetDate: Type_deal_targetDate = function (options) {
+
+    let { scope_type, scope_date, is_order, target_type, target_num } = options
+
+    console.log(scope_date)
+    // console.log(typeof target_num)
+
+
+    switch (target_type) {
+        case 'year':
+            throw new Error('The type expected to be converted should not be passed into the year!')
+        case 'month':
+            if(scope_type === 'year') {
+                let date
+                if(is_order) {
+                    date = new Date(`${scope_date}-${target_num}`)
+                    return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}`
+
+                    // assign_date.setTime(assign_date.getTime() + ((30 * 24 * 60 * 60 * 1000) * target_num));
+                    // return `${assign_date.getFullYear()}-${assign_date.getMonth()+1}`
+                } else {
+                    date = new Date(`${scope_date}-${12 - target_num}`)
+                    return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}`
+                }
+
+
+            } else {    
+                throw new Error('The original type should contain the type expected to be converted!')
+            }
+            
+            break
+        case 'week':
+        case 'day':
+        case 'hour':
+        case 'minute':
+        case 'second':
+
+    }
+    return ''
 }
