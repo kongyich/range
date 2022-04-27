@@ -1,4 +1,4 @@
 
-export const rg_format = function() {
+export const rg_rangeFormat = function() {
     
 }

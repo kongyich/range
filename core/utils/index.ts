@@ -1,3 +1,5 @@
+import { rg_getDate, getDays } from "../libs/get_date"
+
 type Type_getNumDate = (now_day: Date, dis: number, format: string | Function | undefined) => string | number[]
 type Type_formater = (now_day: Date, date_ary: number[], format: string | Function) => string
 
@@ -59,7 +61,30 @@ export const getYear: Type_getNumDate = function (now_day, dis, format) {
 
 // 获取指定数字的月数
 export const getMonth: Type_getNumDate = function (now_day, dis, format) {
-    now_day.setTime(now_day.getTime() + ((30 * 24 * 60 * 60 * 1000) * dis));
+    // if(typeof now_day === 'string') now_day = new Date(now_day)
+    //8      -5
+    let mon = (now_day.getMonth() + 1)
+    let num = 0
+    let mon_num = 0
+
+    let end_num = mon + dis
+    if(end_num < mon) [end_num, mon] = [mon, end_num]
+
+    for(let i = mon; i < end_num; i++) {
+        if(i > 12) {
+            i = 1
+            end_num = end_num - 12
+        }
+        mon_num += getDays(now_day.getFullYear(), i)
+    }
+
+    if(dis > 0) {
+        num = now_day.getTime() + (mon_num*(24 * 60 * 60 * 1000))
+    } else {
+        num = now_day.getTime() - (mon_num*(24 * 60 * 60 * 1000))
+    }
+
+    now_day.setTime(num);
     let date_ary = [now_day.getFullYear(), (now_day.getMonth() + 1)]
 
     if (format) {
@@ -155,17 +180,36 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                     date = new Date(`${scope_date}-${12 - target_num}`)
                     return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}`
                 }
-
-
             } else {    
                 throw new Error('The original type should contain the type expected to be converted!')
             }
-            
-            break
         case 'week':
         case 'day':
+            if(scope_type === 'year' || scope_type === 'month' || scope_type === 'week') {
+                let date =  new Date(`${scope_date}`)
+                if(is_order) {
+                    date.setTime(date.getTime() + ((24 * 60 * 60 * 1000) * (target_num - 1)))
+                    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+                } else {
+                    date = new Date(getMonth(date, 1, 'yyyy-MM') as string)
+                    date.setTime(date.getTime() - ((24 * 60 * 60 * 1000) * target_num))
+                    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+                }
+            } else {
+                throw new Error('The original type should contain the type expected to be converted!')
+            }
         case 'hour':
+            if(scope_type === 'minute' || scope_type === 'second') {
+                throw new Error('The original type should contain the type expected to be converted!')
+            } else {
+                
+            }
         case 'minute':
+            if(scope_type === 'second') {
+                throw new Error('The original type should contain the type expected to be converted!')
+            } else {
+                
+            }
         case 'second':
 
     }

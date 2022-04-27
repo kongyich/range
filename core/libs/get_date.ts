@@ -138,6 +138,10 @@ export const rg_getNoDate: Type_getNoDat = function(scope_date, target_num, scop
             break
         case 'week':
         case 'day':
+            result = deal_targetDate(Object.assign(obj, {
+                scope_date: `${assign_date.getFullYear()}-${assign_date.getMonth()+1}-${assign_date.getDate()}`
+            }))
+            break
         case 'hour':
         case 'minute':
         case 'second':
@@ -158,6 +162,14 @@ export const rg_getNoDate: Type_getNoDat = function(scope_date, target_num, scop
 
 
 
+// 获取每月几天
+export const getDays = function(year: number, month: number): number {
+    let days = [31,28,31,30,31,30,31,31,30,31,30,31] 
+   if ( (year % 4 ===0) && (year % 100 !==0 || year % 400 ===0) ) {
+         days[1] = 29
+   }　　return days[month-1]  
+ }
+ 
 
 
 
