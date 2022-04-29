@@ -1,4 +1,4 @@
-import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, deal_targetWeek, formatNumber } from '../utils/index'
+import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, formatNumber, get_yearRangeData, get_monthRangeData, get_weekRangeData } from '../utils/index'
 
 /**
  * @param {string} type
@@ -6,15 +6,6 @@ import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal
  * @param {string | function} format
  * @return {any}
  */
-
-// enum dateType {
-//     second,
-//     house,
-//     day,
-//     week,
-//     month,
-//     year
-// }
 
 // type Type_params = typeof dateType
 type Type_params = 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year'
@@ -80,13 +71,28 @@ interface Type_range {
     end_date: string
 }
 
+interface Type_rangeType {
+    scope: 'year' | 'month' | 'week',
+    target: 'month' | 'week' | 'day'
+}
+
+
 // 获取时间范围
-type Type_getRange = (type: Type_params, distance?: number, range?: Type_range) => Date[]
+type Type_getRange = (type: Type_rangeType, distance?: number, range?: Type_range) => Date[]
 export const rg_getRange: Type_getRange = function (type, distance, range) {
+    switch(type.scope) {
+        case 'year':
+            get_yearRangeData()
+        case 'month':
+            get_monthRangeData()
+        case 'week':
+            get_weekRangeData()
+    }
+
     return []
 }
 
-// 获取周
+// 获取周几
 type Type_getWeekText = (date: string | Date) => string
 export const rg_getWeekText: Type_getWeekText = function (date) {
     let val = typeof date === 'string' ? new Date(date) : date
@@ -202,6 +208,6 @@ export const getDays = function (year: number, month: number): number {
 
 
 
-// get第12周，传入任意日期
+// get第几周，传入任意日期
 
 // 
