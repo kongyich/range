@@ -68,7 +68,7 @@ export const rg_getDate: Type_getDate = function (options) {
 
 interface Type_range {
     start_date: string,
-    end_date: string
+    end_date?: number | string
 }
 
 interface Type_rangeType {
@@ -78,11 +78,12 @@ interface Type_rangeType {
 
 
 // 获取时间范围
-type Type_getRange = (type: Type_rangeType, distance?: number, range?: Type_range) => Date[]
-export const rg_getRange: Type_getRange = function (type, distance, range) {
+type Type_getRange = (type: Type_rangeType, range: Type_range) => Date[]
+export const rg_getRange: Type_getRange = function (type, range) {
+
     switch(type.scope) {
         case 'year':
-            get_yearRangeData()
+            get_yearRangeData(type.target, range)
         case 'month':
             get_monthRangeData()
         case 'week':

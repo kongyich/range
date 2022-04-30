@@ -314,9 +314,30 @@ const ucfirst = function (str: string) {
     return str
 }
 
-
+interface Type_range {
+    start_date: string,
+    end_date?: number | string
+}
 // 获取scope为年的时间范围
-export const get_yearRangeData = function() {}
+export const get_yearRangeData = function(target: string, range: Type_range): string[] {
+    let { start_date: start, end_date: end } = range
+    if(end) {
+        if(typeof end === 'number') {
+
+        } else if(typeof end === 'string') {
+
+        }
+    }
+    console.log(start)
+    
+    // 'month' | 'week' | 'day'
+    switch(target) {
+        case 'month':
+        case 'week':
+        case 'day':
+    }
+    return []
+}
 // 获取scope为月的时间范围
 export const get_monthRangeData = function() {}
 // 获取scope为周的时间范围
