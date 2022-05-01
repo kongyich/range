@@ -328,7 +328,7 @@ export const get_yearRangeData = function(target: string, range: Type_range): st
 
         }
     }
-    console.log(start)
+    // console.log(start)
     
     // 'month' | 'week' | 'day'
     switch(target) {
