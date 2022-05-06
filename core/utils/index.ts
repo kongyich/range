@@ -51,6 +51,7 @@ export const formatNumber = function (n: number | string): string {
 export const getYear: Type_getNumDate = function (now_day, dis, format) {
     let date_ary = [now_day.getFullYear() + dis]
     if (format) {
+        now_day = new Date(`${date_ary}-${now_day.getMonth()+1}-${now_day.getDate()}`)
         return getDate_format(now_day, date_ary, format)
     }
     return date_ary
@@ -318,21 +319,79 @@ interface Type_range {
     start_date: string,
     end_date?: number | string
 }
+
+interface YEAR{
+    [key: number]: number[],
+}
 // 获取scope为年的时间范围
 export const get_yearRangeData = function(target: string, range: Type_range): string[] {
     let { start_date: start, end_date: end } = range
+    let date_obj = new Date(start)
     if(end) {
         if(typeof end === 'number') {
+            let end_year = getYear(date_obj, end, 'yyyy-MM-dd')
 
+            console.log(end_year)
+
+            end = `${end_year}-${date_obj.getMonth()+1}-${date_obj.getDate()}`
         } else if(typeof end === 'string') {
-
+            // 格式化日期
+            let end_date_obj = new Date(end)
+            end = `${end_date_obj.getFullYear()}-${end_date_obj.getMonth()+1}-${end_date_obj.getDate()}`
         }
+    } else {
+        end = `${date_obj.getFullYear()}-12-31`
     }
-    // console.log(start)
     
     // 'month' | 'week' | 'day'
+    // {
+    //     yyyy: []
+
+    // }
+
     switch(target) {
         case 'month':
+            let [st_year, st_month] = start.split('-').map(date => Number(date))
+            let [ed_year, ed_month] = end.split('-').map(date => Number(date))
+            // let stack = []
+            let years = []
+            let res: YEAR = {}
+            while(st_year <= ed_year) {
+                years.push(st_year++)
+            }
+
+            for(let i = 0; i < years.length; i++) {
+                console.log(i)
+                res[years[i]] = []
+                if(i === 0) {
+                    while(st_month < 13) {
+                        res[years[i]].push(st_month++)
+                    }
+                    continue
+                }
+
+                console.log(i, years.length - 1, 'ppppp')
+
+                if(i === years.length - 1) {
+
+                    console.log(ed_month, '----')
+                    while(ed_month > 0) {
+                        res[years[i]].unshift(ed_month--)
+                    }
+                    continue
+                }
+
+                let num = 1
+                while(num < 13) {
+                    res[years[i]].push(num++)
+                }
+
+            }
+
+            console.log(years)
+            console.log(res)
+
+        break
         case 'week':
         case 'day':
     }

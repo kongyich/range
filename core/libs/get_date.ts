@@ -73,7 +73,7 @@ interface Type_range {
 
 interface Type_rangeType {
     scope: 'year' | 'month' | 'week',
-    target: 'month' | 'week' | 'day'
+    target: 'year' | 'month' | 'week' | 'day'
 }
 
 
@@ -84,10 +84,19 @@ export const rg_getRange: Type_getRange = function (type, range) {
     switch(type.scope) {
         case 'year':
             get_yearRangeData(type.target, range)
+            break
         case 'month':
+            if(type.target === 'year') {
+                throw new Error()
+            }
             get_monthRangeData()
+            break
         case 'week':
+            if(type.target === 'year' || type.target === 'month') {
+                throw new Error()
+            }
             get_weekRangeData()
+            break
     }
 
     return []
