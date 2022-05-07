@@ -1,2 +1,2 @@
-# vue_study
+# range.js
 
