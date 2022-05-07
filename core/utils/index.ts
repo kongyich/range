@@ -51,7 +51,7 @@ export const formatNumber = function (n: number | string): string {
 export const getYear: Type_getNumDate = function (now_day, dis, format) {
     let date_ary = [now_day.getFullYear() + dis]
     if (format) {
-        now_day = new Date(`${date_ary}-${now_day.getMonth()+1}-${now_day.getDate()}`)
+        now_day = new Date(`${date_ary}-${now_day.getMonth() + 1}-${now_day.getDate()}`)
         return getDate_format(now_day, date_ary, format)
     }
     return date_ary
@@ -320,84 +320,140 @@ interface Type_range {
     end_date?: number | string
 }
 
-interface YEAR{
-    [key: number]: number[],
+interface YEAR_OBJ {
+    [key: number]: string[]
+}
+
+interface YEAR {
+    [key: number]: YEAR_OBJ
+}
+
+interface D_YEAR {
+    [key: number]: string[]
 }
 // 获取scope为年的时间范围
-export const get_yearRangeData = function(target: string, range: Type_range): string[] {
+export const get_yearRangeData = function (target: string, range: Type_range): YEAR | D_YEAR {
     let { start_date: start, end_date: end } = range
     let date_obj = new Date(start)
-    if(end) {
-        if(typeof end === 'number') {
+    if (end) {
+        if (typeof end === 'number') {
             let end_year = getYear(date_obj, end, 'yyyy-MM-dd')
 
             console.log(end_year)
 
-            end = `${end_year}-${date_obj.getMonth()+1}-${date_obj.getDate()}`
-        } else if(typeof end === 'string') {
+            end = `${end_year}-${date_obj.getMonth() + 1}-${date_obj.getDate()}`
+        } else if (typeof end === 'string') {
             // 格式化日期
             let end_date_obj = new Date(end)
-            end = `${end_date_obj.getFullYear()}-${end_date_obj.getMonth()+1}-${end_date_obj.getDate()}`
+            end = `${end_date_obj.getFullYear()}-${end_date_obj.getMonth() + 1}-${end_date_obj.getDate()}`
         }
     } else {
         end = `${date_obj.getFullYear()}-12-31`
     }
-    
+
     // 'month' | 'week' | 'day'
     // {
-    //     yyyy: []
-
+    //     yyyy: {
+    //         MM: ['yyyy-MM-dd']
+    //     }
     // }
 
-    switch(target) {
+    let [st_year, st_month, st_day] = start.split('-').map(date => Number(date))
+    let [ed_year, ed_month, ed_day] = end.split('-').map(date => Number(date))
+    let years = []
+    while (st_year <= ed_year) {
+        years.push(st_year++)
+    }
+
+    switch (target) {
         case 'month':
-            let [st_year, st_month] = start.split('-').map(date => Number(date))
-            let [ed_year, ed_month] = end.split('-').map(date => Number(date))
-            // let stack = []
-            let years = []
-            let res: YEAR = {}
-            while(st_year <= ed_year) {
-                years.push(st_year++)
-            }
-
-            for(let i = 0; i < years.length; i++) {
-                console.log(i)
-                res[years[i]] = []
-                if(i === 0) {
-                    while(st_month < 13) {
-                        res[years[i]].push(st_month++)
-                    }
-                    continue
-                }
-
-                console.log(i, years.length - 1, 'ppppp')
-
-                if(i === years.length - 1) {
-
-                    console.log(ed_month, '----')
-                    while(ed_month > 0) {
-                        res[years[i]].unshift(ed_month--)
-                    }
-                    continue
-                }
-
-                let num = 1
-                while(num < 13) {
-                    res[years[i]].push(num++)
-                }
-
-            }
-
-            console.log(years)
-            console.log(res)
-
-        break
-        case 'week':
         case 'day':
+            let stack = []
+            let res: YEAR = {}
+            let d_res: D_YEAR = {}
+            let cope_st_year = st_year
+            let cope_st_month = st_month
+            let cope_ed_year = ed_year
+            let cope_ed_month = ed_month
+            let month = belong_year(years, st_month, ed_month)
+            let pre = 0
+
+            for (let i = 0; i < years.length; i++) {
+                stack.push(years[i])
+                if (target === 'month') res[years[i]] = {}
+                else d_res[years[i]] = []
+
+                for (let j = pre; j < month.length; j++) {
+                    stack.push(month[j])
+                    let days_num = 0
+                    if (stack[stack.length - 2] === cope_st_year && stack[stack.length - 1] === cope_st_month) {
+                        days_num = st_day
+                    }
+
+                    let days = getDays(stack[stack.length - 2], stack[stack.length - 1])
+
+                    if (stack[stack.length - 2] === cope_ed_year && stack[stack.length - 1] === cope_ed_month) {
+                        days = ed_day
+                    }
+                    if (target === 'month') {
+                        res[years[i]][month[j]] = []
+                        while (days > days_num) {
+                            res[years[i]][month[j]].unshift(`${stack[stack.length - 2]}-${stack[stack.length - 1]}-${days}`)
+                            days--
+                        }
+                    } else {
+                        while (days > days_num) {
+                            d_res[years[i]].push(`${stack[stack.length - 2]}-${stack[stack.length - 1]}-${days}`)
+                            days--
+                        }
+                    }
+                    stack.pop()
+                    if (month[j] === 12) {
+                        pre = j + 1
+                        stack.length = 0
+                        break
+                    }
+                }
+            }
+
+            console.log(d_res)
+            return target === 'month' ? res : d_res
+        case 'week':
     }
     return []
 }
 // 获取scope为月的时间范围
-export const get_monthRangeData = function() {}
+export const get_monthRangeData = function () { }
 // 获取scope为周的时间范围
-export const get_weekRangeData = function() {}
+export const get_weekRangeData = function () { }
+
+// 获取年份列表所有的月
+const belong_year = function (years: number[], st_month: number, ed_month: number) {
+    let month: number[] = []
+    for (let i = 0; i < years.length; i++) {
+        let mon = []
+        if (i === 0) {
+            while (st_month < 13) {
+                mon.push(st_month++)
+            }
+            month = month.concat(mon)
+            continue
+        }
+
+        if (i === years.length - 1) {
+            while (ed_month > 0) {
+                mon.unshift(ed_month--)
+            }
+            month = month.concat(mon)
+            continue
+        }
+
+        let num = 1
+        while (num < 13) {
+            mon.push(num++)
+        }
+
+        month = month.concat(mon)
+    }
+    return month
+}
