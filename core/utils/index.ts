@@ -1,5 +1,6 @@
 import { getDays } from "../libs/get_date"
 import { getWeeks as GETWEEKS, getBelongWeeks, get_targetWeekData } from "../utils/week"
+import { getWeeks } from "../utils/week"
 
 type Type_getNumDate = (now_day: Date, dis: number, format: string | Function | undefined) => string | number[]
 type Type_formater = (now_day: Date, date_ary: number[], format: string | Function) => string
@@ -328,6 +329,10 @@ interface YEAR {
     [key: number]: YEAR_OBJ
 }
 
+interface WEEK {
+    [key: number]: YEAR_OBJ
+}
+
 interface D_YEAR {
     [key: number]: string[]
 }
@@ -360,6 +365,11 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
 
     let [st_year, st_month, st_day] = start.split('-').map(date => Number(date))
     let [ed_year, ed_month, ed_day] = end.split('-').map(date => Number(date))
+
+    let cope_st_year = st_year
+    let cope_st_month = st_month
+    let cope_ed_year = ed_year
+    let cope_ed_month = ed_month
     let years = []
     while (st_year <= ed_year) {
         years.push(st_year++)
@@ -371,10 +381,7 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
             let stack = []
             let res: YEAR = {}
             let d_res: D_YEAR = {}
-            let cope_st_year = st_year
-            let cope_st_month = st_month
-            let cope_ed_year = ed_year
-            let cope_ed_month = ed_month
+            
             let month = belong_year(years, st_month, ed_month)
             let pre = 0
 
@@ -419,6 +426,52 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
             console.log(d_res)
             return target === 'month' ? res : d_res
         case 'week':
+            console.log(target)
+            console.log(start)
+            console.log(getWeeks.run(cope_st_year))
+            let weeks = getWeeks.run(cope_st_year)
+            let w_res: WEEK = {}
+            let kleng = Object.keys(weeks)
+            let week: string[] = []
+            let key = 1
+
+            for(let i in weeks) {
+                let ds = weeks[i]
+                if(ds.indexOf(start) > -1) {
+                    week = ds
+                    key = Number(i)
+                }
+            }
+
+            if(week.length < 7) {
+                if(key === 1) {
+                    let before_weeks = getWeeks.run(cope_st_year - 1)
+                    let week_ary = Object.keys(before_weeks)
+                    key = Number(week_ary[week_ary.length - 1])
+                    
+                    week = [...before_weeks[Number(week_ary[week_ary.length - 1])], ...week]
+
+                    w_res[cope_st_year - 1] = {
+                        [key]: week
+                    }
+                }
+
+                if(key === Number(kleng[kleng.length +1])) {
+                    let after_weeks = getWeeks.run(cope_st_year + 1)
+                    let week_ary = Object.keys(after_weeks)
+
+                    key = 1
+                    week = [...week, ...after_weeks[Number(week_ary[1])]]
+                    w_res[key] = week
+                }
+            }
+
+            console.log(week)
+            console.log(w_res, 'w_res')
+
+
+            break
+
     }
     return []
 }
