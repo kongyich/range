@@ -281,7 +281,6 @@ const generate_weekDate = function (scope_date: string, target_type: string, tar
 
     if (is_order) {
         date = new Date(`${be_weeks[0]} 00:00:00`)
-        console.log(date)
         date.setTime(date.getTime() + (time_num * (target_type === 'day' ? (target_num - 1) : target_num)))
     } else {
         date = new Date(`${be_weeks[be_weeks.length - 1]} 00:00:00`)
@@ -344,9 +343,7 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
         if (typeof end === 'number') {
             let end_year = getYear(date_obj, end, 'yyyy-MM-dd')
 
-            console.log(end_year)
-
-            end = `${end_year}-${date_obj.getMonth() + 1}-${date_obj.getDate()}`
+            end = end_year as string
         } else if (typeof end === 'string') {
             // 格式化日期
             let end_date_obj = new Date(end)
@@ -423,50 +420,109 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
                 }
             }
 
-            console.log(d_res)
             return target === 'month' ? res : d_res
         case 'week':
             console.log(target)
             console.log(start)
-            console.log(getWeeks.run(cope_st_year))
-            let weeks = getWeeks.run(cope_st_year)
+            
             let w_res: WEEK = {}
-            let kleng = Object.keys(weeks)
+            let kleng
             let week: string[] = []
+            let weeks = getWeeks.run(cope_st_year)
             let key = 1
 
-            for(let i in weeks) {
-                let ds = weeks[i]
-                if(ds.indexOf(start) > -1) {
-                    week = ds
-                    key = Number(i)
-                }
-            }
+            for(let i = 0; i < years.length; i++) {
+                
+                kleng = Object.keys(weeks)
+                if(i === 0) {
+                    for(let wek in weeks) {
+                        let ds = weeks[wek]
+                        if(ds.indexOf(start) > -1) {
+                            week = ds
+                            key = Number(wek)
+                        }
+                    }
 
-            if(week.length < 7) {
-                if(key === 1) {
-                    let before_weeks = getWeeks.run(cope_st_year - 1)
-                    let week_ary = Object.keys(before_weeks)
-                    key = Number(week_ary[week_ary.length - 1])
-                    
-                    week = [...before_weeks[Number(week_ary[week_ary.length - 1])], ...week]
 
-                    w_res[cope_st_year - 1] = {
-                        [key]: week
+                    if(week.length < 7) {
+                        if(key === 1) {
+                            let before_weeks = getWeeks.run(years[i] - 1)
+                            let week_ary = Object.keys(before_weeks)
+                            key = Number(week_ary[week_ary.length - 1])
+                            
+                            week = [...before_weeks[Number(week_ary[week_ary.length - 1])], ...week]
+        
+                            w_res[years[i] - 1] = {
+                                [key]: week
+                            }
+                        }
+        
+                        if(key === Number(kleng[kleng.length +1])) {
+                            let after_weeks = getWeeks.run(years[i] + 1)
+                            let week_ary = Object.keys(after_weeks)
+        
+                            key = 1
+                            week = [...week, ...after_weeks[Number(week_ary[1])]]
+                            w_res[years[i] + 1] = {
+                                [key]: week
+                            }
+                        }
+                    } else {
+                        w_res[years[i]] = {
+                            [key]: week
+                        }
+                    }
+
+                    for(let l = key + 1; l <= Number(kleng[kleng.length - 1]); l++) {
+                        w_res[years[i]][l] = weeks[l]
+                    }
+                } else if(i === years.length - 1) {
+
+                    let lst_wek: number = 0
+                    if(weeks[1].length < 7) {
+                        delete weeks[1]
+                    }
+
+                    for(let wek in weeks) {
+                        let ds = weeks[wek]
+                        if(ds.indexOf(end) > -1) {
+                            lst_wek = Number(wek)
+                        }
+                    }
+
+                    if(lst_wek === 0) continue
+                    w_res[years[i]] = {}
+                    for(let l = (1 in weeks ? 1 : 2); l <= lst_wek; l++) {
+                        w_res[years[i]][(1 in weeks ? l : l - 1)] = weeks[l]
+                    }
+
+                    if(w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)].length < 7) {
+                        w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)] = [...w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)], ...getWeeks.run(years[i + 1])[1]]
+                    }
+                    break
+
+                } else{
+                    if(weeks[1].length < 7) {
+                        delete weeks[1]
+                    }
+
+                    w_res[years[i]] = {}
+
+                    for(let j = (1 in weeks ? 1 : 2) ; j <= Number(kleng[kleng.length - 1]); j++) {
+                        w_res[years[i]][(1 in weeks ? j : j - 1)] = weeks[j]
                     }
                 }
 
-                if(key === Number(kleng[kleng.length +1])) {
-                    let after_weeks = getWeeks.run(cope_st_year + 1)
-                    let week_ary = Object.keys(after_weeks)
+                let last_key = Object.keys(w_res[years[i]])[Object.keys(w_res[years[i]]).length - 1]
+                    weeks = getWeeks.run(years[i + 1])
 
-                    key = 1
-                    week = [...week, ...after_weeks[Number(week_ary[1])]]
-                    w_res[key] = week
-                }
+                    if(w_res[years[i]][Number(last_key)].length < 7) {
+                        w_res[years[i]][Number(last_key)] = [...w_res[years[i]][Number(last_key)], ...weeks[1]]
+                    }
+
             }
 
-            console.log(week)
+            console.log(years)
             console.log(w_res, 'w_res')
 
 
