@@ -315,10 +315,10 @@ const ucfirst = function (str: string) {
     return str
 }
 
-interface Type_range {
-    start_date: string,
-    end_date?: number | string
-}
+// interface Type_range {
+//     start_date: string,
+//     end_date?: number | string
+// }
 
 interface YEAR_OBJ {
     [key: number]: string[]
@@ -328,31 +328,17 @@ interface YEAR {
     [key: number]: YEAR_OBJ
 }
 
-interface WEEK {
-    [key: number]: YEAR_OBJ
-}
+// interface WEEK {
+//     [key: number]: YEAR_OBJ
+// }
 
 interface D_YEAR {
     [key: number]: string[]
 }
 // 获取scope为年的时间范围
-export const get_yearRangeData = function (target: string, range: Type_range): YEAR | D_YEAR {
-    let { start_date: start, end_date: end } = range
-    let date_obj = new Date(start)
-    if (end) {
-        if (typeof end === 'number') {
-            let end_year = getYear(date_obj, end, 'yyyy-MM-dd')
-
-            end = end_year as string
-        } else if (typeof end === 'string') {
-            // 格式化日期
-            let end_date_obj = new Date(end)
-            end = `${end_date_obj.getFullYear()}-${end_date_obj.getMonth() + 1}-${end_date_obj.getDate()}`
-        }
-    } else {
-        end = `${date_obj.getFullYear()}-12-31`
-    }
-
+export const get_ymRangeData = function (target: string, start: string, end: string): YEAR | D_YEAR {
+    
+    // let { start_date: start, end_date: end } = range
     // 'month' | 'week' | 'day'
     // {
     //     yyyy: {
@@ -373,6 +359,8 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
     }
 
     switch (target) {
+        case 'year':
+            break
         case 'month':
         case 'day':
             let stack = []
@@ -425,7 +413,7 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
             console.log(target)
             console.log(start)
             
-            let w_res: WEEK = {}
+            let w_res: YEAR = {}
             let kleng
             let week: string[] = []
             let weeks = getWeeks.run(cope_st_year)
@@ -526,15 +514,29 @@ export const get_yearRangeData = function (target: string, range: Type_range): Y
             console.log(w_res, 'w_res')
 
 
-            break
+            return w_res
 
     }
     return []
 }
+
+
+
+
 // 获取scope为月的时间范围
-export const get_monthRangeData = function () { }
 // 获取scope为周的时间范围
-export const get_weekRangeData = function () { }
+export const get_weekRangeData = function (target: string, start: string, end: string) { 
+
+}
+
+
+
+
+
+
+
+
+
 
 // 获取年份列表所有的月
 const belong_year = function (years: number[], st_month: number, ed_month: number) {

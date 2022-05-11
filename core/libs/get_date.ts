@@ -1,5 +1,5 @@
-import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, formatNumber, get_yearRangeData, get_monthRangeData, get_weekRangeData } from '../utils/index'
-
+import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, formatNumber, get_ymRangeData, get_weekRangeData } from '../utils/index'
+import { getWeeks } from "../utils/week"
 /**
  * @param {string} type
  * @param {number} distance
@@ -75,27 +75,53 @@ interface Type_rangeType {
     scope: 'year' | 'month' | 'week',
     target: 'year' | 'month' | 'week' | 'day'
 }
+interface YEAR_OBJ {
+    [key: number]: string[]
+}
 
+interface YEAR {
+    [key: number]: YEAR_OBJ
+}
+interface D_YEAR {
+    [key: number]: string[]
+}
 
 // 获取时间范围
-type Type_getRange = (type: Type_rangeType, range: Type_range) => Date[]
+type Type_getRange = (type: Type_rangeType, range: Type_range) => YEAR | D_YEAR
 export const rg_getRange: Type_getRange = function (type, range) {
+
+    const fn_target = {
+        'year': getYear,
+        'month': getMonth
+    }
+
+    let { start_date, end_date } = range
+    let date_obj = new Date(start_date)
 
     switch(type.scope) {
         case 'year':
-            get_yearRangeData(type.target, range)
-            break
         case 'month':
-            if(type.target === 'year') {
-                throw new Error()
+            if (end_date) {
+                if (typeof end_date === 'number') {
+                    let end_year = fn_target[type.scope](date_obj, end_date, 'yyyy-MM-dd')
+
+                    end_date = end_year as string
+                } else if (typeof end_date === 'string') {
+                    // 格式化日期
+                    let end_date_obj = new Date(end_date)
+                    end_date = `${end_date_obj.getFullYear()}-${end_date_obj.getMonth() + 1}-${end_date_obj.getDate()}`
+                }
+            } else {
+                end_date = `${date_obj.getFullYear()}-12-31`
             }
-            get_monthRangeData()
-            break
+
+            return get_ymRangeData(type.target, start_date, end_date)
         case 'week':
-            if(type.target === 'year' || type.target === 'month') {
-                throw new Error()
-            }
-            get_weekRangeData()
+            let weks = getWeeks.run(date_obj.getFullYear())
+            console.log(weks)
+
+
+            // get_weekRangeData(type.target, start_date, end_date)
             break
     }
 
