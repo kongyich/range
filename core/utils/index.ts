@@ -422,6 +422,9 @@ export const get_ymRangeData = function (target: string, start: string, end: str
             for(let i = 0; i < years.length; i++) {
                 
                 kleng = Object.keys(weeks)
+
+
+
                 if(i === 0) {
                     for(let wek in weeks) {
                         let ds = weeks[wek]
@@ -461,9 +464,25 @@ export const get_ymRangeData = function (target: string, start: string, end: str
                         }
                     }
 
-                    for(let l = key + 1; l <= Number(kleng[kleng.length - 1]); l++) {
-                        w_res[years[i]][l] = weeks[l]
+                    if(years.length === 1) {
+                        let lst_wek: number = 0
+                        for(let wek in weeks) {
+                            let ds = weeks[wek]
+                            if(ds.indexOf(end) > -1) {
+                                lst_wek = Number(wek)
+                            }
+                        }
+
+                        for(let l = key + 1; l <= lst_wek; l++) {
+                            w_res[years[i]][l] = weeks[l]
+                        }
+                    } else {
+                        for(let l = key + 1; l <= Number(kleng[kleng.length - 1]); l++) {
+                            w_res[years[i]][l] = weeks[l]
+                        }
                     }
+
+                    
                 } else if(i === years.length - 1) {
 
                     let lst_wek: number = 0
@@ -477,6 +496,8 @@ export const get_ymRangeData = function (target: string, start: string, end: str
                             lst_wek = Number(wek)
                         }
                     }
+
+                    // console.log(lst_wek, 'lst_wek')
 
                     if(lst_wek === 0) continue
                     w_res[years[i]] = {}

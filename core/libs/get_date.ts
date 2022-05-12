@@ -117,10 +117,21 @@ export const rg_getRange: Type_getRange = function (type, range) {
 
             return get_ymRangeData(type.target, start_date, end_date)
         case 'week':
-            let weks = getWeeks.run(date_obj.getFullYear())
-            console.log(weks)
 
+            if(!end_date) end_date = `${date_obj.getFullYear()}-12-31`
 
+            if(typeof end_date === 'number') {
+                let end = getWeek(date_obj, end_date, 'yyyy-MM-dd') as string
+                console.log(get_ymRangeData(type.target, start_date, end), '990000')
+                
+            } else if(typeof end_date === 'string') {
+                return get_ymRangeData(type.target, start_date, end_date)
+            }
+
+            // let weks = getWeeks.run(date_obj.getFullYear())
+            // console.log(weks)
+
+            
             // get_weekRangeData(type.target, start_date, end_date)
             break
     }
