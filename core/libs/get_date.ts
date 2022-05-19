@@ -1,4 +1,4 @@
-import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, formatNumber, get_ymRangeData, get_weekRangeData } from '../utils/index'
+import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, formatNumber, get_ymRangeData } from '../utils/index'
 import { getWeeks } from "../utils/week"
 /**
  * @param {string} type
@@ -240,8 +240,6 @@ export const getDays = function (year: number, month: number): number {
         days[1] = 29
     } return days[month - 1]
 }
-
-
 
 
 

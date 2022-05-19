@@ -536,27 +536,9 @@ export const get_ymRangeData = function (target: string, start: string, end: str
 
 
             return w_res
-
     }
     return []
 }
-
-
-
-
-// 获取scope为月的时间范围
-// 获取scope为周的时间范围
-export const get_weekRangeData = function (target: string, start: string, end: string) { 
-
-}
-
-
-
-
-
-
-
-
 
 
 // 获取年份列表所有的月
