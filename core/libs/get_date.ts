@@ -1,63 +1,5 @@
-import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, deal_targetDate, formatNumber, get_ymRangeData } from '../utils/index'
-import { getWeeks } from "../utils/week"
-/**
- * @param {string} type
- * @param {number} distance
- * @param {string | function} format
- * @return {any}
- */
+import { getYear, getMonth, getWeek, deal_targetDate, formatNumber, get_ymRangeData } from '../utils/index'
 
-// type Type_params = typeof dateType
-type Type_params = 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year'
-interface Param_getDate {
-    type: Type_params,
-    date?: string | Date,
-    distance?: number,
-    format?: string | Function
-}
-type Type_getDate = (options: Param_getDate) => any
-
-// 获取基于本日及特定日期的日期
-export const rg_getDate: Type_getDate = function (options) {
-
-    let { type, date, distance, format } = options
-    const now_day: Date = date ? typeof date === 'string' ? new Date(date) : date : new Date()
-
-    if (typeof distance === 'string' || typeof distance === 'function') {
-        format = distance
-        distance = undefined
-    }
-
-    distance = distance || 0
-    let result: string | number[]
-
-    switch (type) {
-        case 'second':
-            result = getSecond(now_day, distance, format)
-            break
-        case 'minute':
-            result = getMinute(now_day, distance, format)
-            break
-        case 'hour':
-            result = getHour(now_day, distance, format)
-            break
-        case 'day':
-            result = getDay(now_day, distance, format)
-            break
-        case 'month':
-            result = getMonth(now_day, distance, format)
-            break
-        case 'year':
-            result = getYear(now_day, distance, format)
-            break
-        case 'week':
-            result = getWeek(now_day, distance, format)
-            break;
-    }
-
-    console.log(result, '<----result')
-    return result
-}
 
 /**
  * @param {string} type
@@ -140,15 +82,15 @@ export const rg_getRange: Type_getRange = function (type, range) {
 }
 
 // 获取周几
-type Type_getWeekText = (date: string | Date) => string
-export const rg_getWeekText: Type_getWeekText = function (date) {
-    let val = typeof date === 'string' ? new Date(date) : date
-    let day = val.getDay()
-    let text_ary = ['一', '二', '三', '四', '五', '六', '日']
+// type Type_getWeekText = (date: string | Date) => string
+// export const rg_getWeekText: Type_getWeekText = function (date) {
+//     let val = typeof date === 'string' ? new Date(date) : date
+//     let day = val.getDay()
+//     let text_ary = ['一', '二', '三', '四', '五', '六', '日']
 
-    console.log(`周${day === 0 ? text_ary[6] : text_ary[day - 1]}`, '<----rg_getWeekText result')
-    return `周${day === 0 ? text_ary[6] : text_ary[day - 1]}`
-}
+//     console.log(`周${day === 0 ? text_ary[6] : text_ary[day - 1]}`, '<----rg_getWeekText result')
+//     return `周${day === 0 ? text_ary[6] : text_ary[day - 1]}`
+// }
 
 
 
@@ -234,12 +176,12 @@ export const rg_getNoDate: Type_getNoDat = function (scope_date, target_num, sco
 
 
 // 获取每月几天
-export const getDays = function (year: number, month: number): number {
-    let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    if ((year % 4 === 0) && (year % 100 !== 0 || year % 400 === 0)) {
-        days[1] = 29
-    } return days[month - 1]
-}
+// export const getDays = function (year: number, month: number): number {
+//     let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+//     if ((year % 4 === 0) && (year % 100 !== 0 || year % 400 === 0)) {
+//         days[1] = 29
+//     } return days[month - 1]
+// }
 
 
 
