@@ -1,4 +1,4 @@
-import { deal_targetDate } from "../utils/assign"
+import { deal_targetDate } from "../utils/absolute"
 import { formatNumber } from "../utils/basic"
 
 /**
@@ -8,7 +8,7 @@ import { formatNumber } from "../utils/basic"
  * @return {string}
  */
  type Type_getNoDat = (scope_date: string, target_num: number, scope_type: string, target_type: string) => string
- export const assign: Type_getNoDat = function (scope_date, target_num, scope_type, target_type) {
+ export const absolute: Type_getNoDat = function (scope_date, target_num, scope_type, target_type) {
      let assign_date = new Date(scope_date)
      let is_order = target_num >= 0
  

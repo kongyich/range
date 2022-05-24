@@ -1,6 +1,6 @@
-import { formatNumber } from "../utils/basic"
-import { getYear, getMonth, getWeek, getDay, getHour, getMinute, getSecond, } from "../utils/based"
-
+import { formatNumber, getDays } from "./basic"
+import { getYear, getMonth, getWeek, getDay, getHour, getMinute } from "./based"
+import { getWeeks } from "./week"
 
 
 interface Params_deal_targetDate {
@@ -12,34 +12,37 @@ interface Params_deal_targetDate {
 }
 type Type_deal_targetDate = (options: Params_deal_targetDate) => string
 
+
+
+
 // 处理target子集
 export const deal_targetDate: Type_deal_targetDate = function (options) {
 
   let { scope_type, scope_date, is_order, target_type, target_num } = options
-  console.log(scope_date)
 
   switch (target_type) {
       case 'year':
           throw new Error('The type expected to be converted should not be passed into the year!')
       case 'month':
           if (scope_type === 'year') {
-              let date
-              if (is_order) {
-                  date = new Date(`${scope_date}-${target_num}`)
-                  return `${date.getFullYear()}-${formatNumber(date.getMonth() + 1)}`
-              } else {
-                  date = new Date(`${scope_date}-${12 - target_num}`)
-                  return `${date.getFullYear()}-${formatNumber(date.getMonth() + 1)}`
-              }
+              let date, data_params
+              data_params = `${scope_date}-${is_order ? target_num : (12 - target_num)}`
+             
+              date = new Date(data_params)
+              return `${date.getFullYear()}-${formatNumber(date.getMonth() + 1)}`
+              
           } else {
               throw new Error('The original type should contain the type expected to be converted!')
           }
-      // case 'week':
-      //     if (scope_type === 'year' || scope_type === 'month') {
-      //         return get_targetWeekData(scope_type, scope_date, target_num, is_order)
-      //     } else {
-      //         throw new Error('The original type should contain the type expected to be converted!')
-      //     }
+      case 'week':
+          if (scope_type === 'year' || scope_type === 'month') {
+            let date = new Date(scope_date)
+            let deal_date = scope_type === 'year' ? date.getFullYear().toString() : `${date.getFullYear()}-${date.getMonth()+1}`
+
+            return get_targetWeekData(deal_date, target_num, is_order)
+          } else {
+              throw new Error('The original type should contain the type expected to be converted!')
+          }
       case 'day':
           if (scope_type === 'year' || scope_type === 'month') {
               let date = new Date(`${scope_date}`)
@@ -120,6 +123,84 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
   }
   return ''
 }
+
+
+const get_targetWeekData = function(date: string, num: number, is_order: boolean) {
+    let [year, month] = date.split('-').map(d=>Number(d))
+    //   let weeks_ary: String[] = [];
+
+      if (!month) {
+        // weeks_ary = Object.values(getWeeks.run(year))
+      } else {
+        get_mons(year, month, num, is_order)
+        // weeks_ary = Object.values(getWeeks.run(year, month))
+      }
+    
+    
+    //   if (weeks_ary[0].length < 7) {
+    //     weeks_ary.splice(0, 1)
+    //   }
+    //   let i = num % weeks_ary.length
+    //   if (i === 0) i = weeks_ary.length
+    
+    //   if(!is_order) {
+    //     weeks_ary = weeks_ary.reverse()
+    //   } 
+    //   i = i - 1
+    //   return weeks_ary[i][0]
+    return ''
+}
+
+// 获取月粒度的指定周
+const get_mons = function(year: number, month: number, num: number, is_order: boolean) {
+    let days = getDays(year, month)
+    let first_mon = 1
+    let res = 1
+
+    if(is_order) {
+        for(let d = 1; d < days; d++) {
+            if(new Date(`${year}-${month}-${d}`).getDay() === 1) {
+                first_mon = d
+                break
+            }
+    
+        }
+
+        res = first_mon
+
+        while(--num) {
+            res += 7
+            if(res > days) {
+                res = first_mon
+            }
+        }
+    } else {
+        for(let d = days; d > 1; d--) {
+            if(new Date(`${year}-${month}-${d}`).getDay() === 1) {
+                first_mon = d
+                break
+            }
+    
+        }
+
+        res = first_mon
+
+        while(--num) {
+            res -= 7
+            if(res < 0) {
+                res = first_mon
+            }
+        }
+    }
+    
+
+    console.log(res, 'pppppp')
+    return res
+}
+
+
+
+
 
 
 interface FN_ENABLE {
