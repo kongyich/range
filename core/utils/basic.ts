@@ -36,6 +36,10 @@ export const formatNumber = function (n: number | string): string {
   return n_str.length > 1 ? n_str : '0' + n;
 }
 
+// export const data_format = function() {
+
+// }
+
 
 
 // 获取每月几天

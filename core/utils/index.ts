@@ -257,37 +257,6 @@
 //     return ''
 // }
 
-// // 生成week日期对象
-// const generate_weekDate = function (scope_date: string, target_type: string, target_num: number, is_order: boolean): Date {
-//     let date = new Date(scope_date)
-//     let weeks_ary = GETWEEKS.run(date.getFullYear(), date.getMonth() + 1)
-//     let be_weeks = getBelongWeeks(weeks_ary, scope_date)
-//     console.log(be_weeks, '<----be_weeks')
-//     let time_num = 0
-//     switch (target_type) {
-//         case 'day':
-//             time_num = (24 * 60 * 60 * 1000)
-//             break
-//         case 'hour':
-//             time_num = (60 * 60 * 1000)
-//             break
-//         case 'minute':
-//             time_num = 60 * 1000
-//             break
-//         case 'second':
-//             time_num = 1000
-//             break
-//     }
-
-//     if (is_order) {
-//         date = new Date(`${be_weeks[0]} 00:00:00`)
-//         date.setTime(date.getTime() + (time_num * (target_type === 'day' ? (target_num - 1) : target_num)))
-//     } else {
-//         date = new Date(`${be_weeks[be_weeks.length - 1]} 00:00:00`)
-//         date.setTime(date.getTime() - (time_num * target_num))
-//     }
-//     return date
-// }
 
 // interface FN_ENABLE {
 //     [key: string]: Function, // 字段扩展声明
