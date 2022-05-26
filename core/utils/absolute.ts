@@ -1,4 +1,4 @@
-import { formatNumber, getDays } from "./basic"
+import { formatNumber, getDays, simple_format, computed_week } from "./basic"
 import { getYear, getMonth, getWeek, getDay, getHour, getMinute } from "./based"
 import { getWeeks } from "./week"
 
@@ -57,11 +57,9 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
           } 
           else if (scope_type === 'week') {
             let date = new Date(`${scope_date}`)
-            get_belong_weeks(date, target_num, is_order)
-            //   let date = generate_weekDate(scope_date, target_type, target_num, is_order)
-            //   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-          } 
-          else {
+            let weks = get_belong_weeks(date, target_num, is_order)
+            return simple_format(generate_weekDate(weks, target_type, target_num, is_order))
+          }  else {
               throw new Error('The original type should contain the type expected to be converted!')
           }
 
@@ -79,11 +77,11 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                       date.setTime(date.getTime() - ((60 * 60 * 1000) * target_num))
                       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}`
                   }
-              } 
-              // else if (scope_type === 'week') {
-              //     let date = generate_weekDate(scope_date, target_type, target_num, is_order)
-              //     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-              // }
+              } else if (scope_type === 'week') {
+                let date = new Date(`${scope_date}`)
+                let weks = get_belong_weeks(date, target_num, is_order)
+                return simple_format(generate_weekDate(weks, target_type, target_num, is_order), true)
+              }
           }
       case 'minute':
           if (scope_type === 'second') {
@@ -99,11 +97,11 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                       date.setTime(date.getTime() - ((60 * 1000) * target_num))
                       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
                   }
-              } 
-              // else if (scope_type === 'week') {
-              //     let date = generate_weekDate(scope_date, target_type, target_num, is_order)
-              //     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-              // }
+              } else if (scope_type === 'week') {
+                let date = new Date(`${scope_date}`)
+                let weks = get_belong_weeks(date, target_num, is_order)
+                return simple_format(generate_weekDate(weks, target_type, target_num, is_order), true)
+              }
           }
       case 'second':
           if (scope_type === 'year' || scope_type === 'month' || scope_type === 'day' || scope_type === 'hour' || scope_type === 'minute') {
@@ -117,31 +115,30 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                   date.setTime(date.getTime() - 1000 * target_num)
                   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}-${date.getMinutes()}:${date.getSeconds()}`
               }
-          } 
-          // else if (scope_type === 'week') {
-          //     let date = generate_weekDate(scope_date, target_type, target_num, is_order)
-          //     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-          // }
+          } else if (scope_type === 'week') {
+            let date = new Date(`${scope_date}`)
+            let weks = get_belong_weeks(date, target_num, is_order)
+            return simple_format(generate_weekDate(weks, target_type, target_num, is_order), true)
+          }
   }
   return ''
 }
 
 
 
-
+// 获取指定时间所在的周数
 const get_belong_weeks = function(date: Date, num: number, is_order: boolean) {
     let l_date = date
     let day = date.getDay()
     let weks: string[] = [simple_format(date)]
+    let be_date
     if(day === 1) {
-        let be_date
         for(let i = 1; i < 7; i++) {
             be_date =  new Date(date.getTime()+computed_week(1))
             weks.push(`${simple_format(be_date)}`)
             date = be_date
         }
     } else if(day === 0) {
-        let be_date
 
         for(let i = 1; i < 7; i++) {
             be_date =  new Date(date.getTime()-computed_week(1))
@@ -149,7 +146,6 @@ const get_belong_weeks = function(date: Date, num: number, is_order: boolean) {
             date = be_date
         }
     } else {
-        let be_date
         for(let i = 1; i < day; i++) {
             be_date =  new Date(date.getTime()-computed_week(1))
             weks.unshift(`${simple_format(be_date)}`)
@@ -165,52 +161,43 @@ const get_belong_weeks = function(date: Date, num: number, is_order: boolean) {
         }
     }
     console.log(weks)
+    return weks
 }
 
 
-const computed_week = (num: number) => 1000 * 60 * 60 * 24 * num
+// 获取所属周的时间
+const generate_weekDate = function (weeks: string[], target_type: string, target_num: number, is_order: boolean): Date {
+    let date
+    let be_weeks = weeks
+    console.log(be_weeks, '<----be_weeks')
+    let time_num = 0
+    switch (target_type) {
+        case 'day':
+            time_num = (24 * 60 * 60 * 1000)
+            break
+        case 'hour':
+            time_num = (60 * 60 * 1000)
+            break
+        case 'minute':
+            time_num = 60 * 1000
+            break
+        case 'second':
+            time_num = 1000
+            break
+    }
 
-const simple_format = function(date: Date) {
-    return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}-${formatNumber(date.getDate())}`
+    target_num = target_num % weeks.length
+    if (target_num === 0) target_num = weeks.length
+
+    if (is_order) {
+        date = new Date(`${be_weeks[0]} 00:00:00`)
+        date.setTime(date.getTime() + (time_num * (target_type === 'day' ? (target_num - 1) : target_num)))
+    } else {
+        date = new Date(`${be_weeks[be_weeks.length - 1]} 00:00:00`)
+        date.setTime(date.getTime() - (time_num * (target_num - 1)))
+    }
+    return date
 }
-
-
-// // 生成week日期对象
-// const generate_weekDate = function (scope_date: string, target_type: string, target_num: number, is_order: boolean): Date {
-//     let date = new Date(scope_date)
-//     let weeks_ary = GETWEEKS.run(date.getFullYear(), date.getMonth() + 1)
-//     let be_weeks = getBelongWeeks(weeks_ary, scope_date)
-//     console.log(be_weeks, '<----be_weeks')
-//     let time_num = 0
-//     switch (target_type) {
-//         case 'day':
-//             time_num = (24 * 60 * 60 * 1000)
-//             break
-//         case 'hour':
-//             time_num = (60 * 60 * 1000)
-//             break
-//         case 'minute':
-//             time_num = 60 * 1000
-//             break
-//         case 'second':
-//             time_num = 1000
-//             break
-//     }
-
-//     if (is_order) {
-//         date = new Date(`${be_weeks[0]} 00:00:00`)
-//         date.setTime(date.getTime() + (time_num * (target_type === 'day' ? (target_num - 1) : target_num)))
-//     } else {
-//         date = new Date(`${be_weeks[be_weeks.length - 1]} 00:00:00`)
-//         date.setTime(date.getTime() - (time_num * target_num))
-//     }
-//     return date
-// }
-
-
-
-
-
 
 
 
@@ -308,8 +295,6 @@ const get_year_from_day = function(year: number, num: number, is_order: boolean)
     let new_date = new Date(res)
     return `${new_date.getFullYear()}-${formatNumber(new_date.getMonth()+1)}-${formatNumber(new_date.getDate())}`
 }
-
-
 
 interface FN_ENABLE {
     [key: string]: Function, // 字段扩展声明

@@ -36,10 +36,18 @@ export const formatNumber = function (n: number | string): string {
   return n_str.length > 1 ? n_str : '0' + n;
 }
 
-// export const data_format = function() {
+// 简单格式化
+export const simple_format = function(date: Date, isMini = false) {
+    if(isMini) {
+        return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}-${formatNumber(date.getDate())}-${formatNumber(date.getHours())}-${formatNumber(date.getMinutes())}-${formatNumber(date.getSeconds())}`
+    } else {
+        return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}-${formatNumber(date.getDate())}`
+    } 
+}
 
-// }
 
+// 返回周粒度时间戳
+export const computed_week = (num: number) => 1000 * 60 * 60 * 24 * num
 
 
 // 获取每月几天
