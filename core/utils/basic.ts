@@ -6,27 +6,37 @@ export const getDate_format: Type_formater = function (now_day, date_ary, format
   if (typeof format === 'function') {
       return format(date_ary)
   } else {
-      format = format.replace(/(yyyy)|(MM)|(dd)|(HH)|(mm)|(ss)/g, function (val) {
-          if (val === 'yyyy') {
-              return now_day.getFullYear().toString()
-          } else if (val === 'MM') {
-              return formatNumber(now_day.getMonth() + 1)
-          } else if (val === 'dd') {
-              return formatNumber(now_day.getDate())
-          } else if (val === 'HH') {
-              return formatNumber(now_day.getHours())
-          } else if (val === 'mm') {
-              return formatNumber(now_day.getMinutes())
-          } else if (val === 'ss') {
-              return formatNumber(now_day.getSeconds())
-          } else {
-              return ''
-          }
-
-      })
-      // console.log(format, '<-----format')
-      return format
+      return get_replace_date(now_day, format)
   }
+}
+
+export const get_replace_date = function(date: Date | string[], format: string, adz: boolean=true) {
+    let ay: string[] = []
+    if(!Array.isArray(date)) {
+        ay = [date.getFullYear().toString(), adz ? formatNumber(date.getMonth() + 1) : (date.getMonth() + 1).toString(), adz ? formatNumber(date.getDate()) : date.getDate().toString(), adz ? formatNumber(date.getHours()) : date.getHours().toString(), adz ? formatNumber(date.getMinutes()) : date.getMinutes().toString(), adz ? formatNumber(date.getSeconds()) : date.getSeconds().toString()]
+    } else {
+        ay = date
+    }
+
+
+    return  format.replace(/(yyyy)|(MM)|(dd)|(HH)|(mm)|(ss)/g, function (val) {
+        if (val === 'yyyy') {
+            return ay[0]
+        } else if (val === 'MM') {
+            return ay[1]
+        } else if (val === 'dd') {
+            return ay[2]
+        } else if (val === 'HH') {
+            return ay[3]
+        } else if (val === 'mm') {
+            return ay[4]
+        } else if (val === 'ss') {
+            return ay[5]
+        } else {
+            return ''
+        }
+
+    })
 }
 
 

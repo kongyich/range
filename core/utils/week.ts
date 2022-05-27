@@ -43,38 +43,3 @@ export const getWeeks = {
     return dates
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-// // 获取指定年，月第一天
-// export const get_targetWeekData = function (scope_type: string, scope_date: string, target_num: number, is_order: boolean): string {
-//   let date = new Date(scope_date)
-//   let weeks_ary: String[] = [];
-//   if (scope_type === 'year') {
-//     weeks_ary = Object.values(getWeeks.run(date.getFullYear()))
-//   } else if (scope_type === 'month') {
-//     weeks_ary = Object.values(getWeeks.run(date.getFullYear(), date.getMonth() + 1))
-//   }
-
-
-//   if (weeks_ary[0].length < 7) {
-//     weeks_ary.splice(0, 1)
-//   }
-//   let i = target_num % weeks_ary.length
-//   if (i === 0) i = weeks_ary.length
-
-//   if(!is_order) {
-//     weeks_ary = weeks_ary.reverse()
-//   } 
-//   i = i - 1
-//   return weeks_ary[i][0]
-// }
-
