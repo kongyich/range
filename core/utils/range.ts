@@ -104,8 +104,6 @@ export const get_ym_range = function (target: string, start: string, end: string
                 
                 kleng = Object.keys(weeks)
 
-
-
                 if(i === 0) {
                     for(let wek in weeks) {
                         let ds = weeks[wek]

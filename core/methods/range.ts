@@ -23,6 +23,10 @@ interface YEAR_OBJ {
 }
 
 
+// is_pane 是否展开
+// is_first 周 是否计算不满7天的日期
+// use_cn 是否使用中文描述
+
 type TYPE_RANGE = (types: TYPE_TYPE, dates: TYPE_DATE) => YEAR | D_YEAR
 
 export const range: TYPE_RANGE  = function(types, dates) {

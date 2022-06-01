@@ -49,7 +49,7 @@ export const formatNumber = function (n: number | string): string {
 // 简单格式化
 export const simple_format = function(date: Date, isMini = false) {
     if(isMini) {
-        return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}-${formatNumber(date.getDate())}-${formatNumber(date.getHours())}-${formatNumber(date.getMinutes())}-${formatNumber(date.getSeconds())}`
+        return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}-${formatNumber(date.getDate())} ${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}:${formatNumber(date.getSeconds())}`
     } else {
         return `${date.getFullYear()}-${formatNumber(date.getMonth()+1)}-${formatNumber(date.getDate())}`
     } 
@@ -69,4 +69,9 @@ export const getDays = function (year: number, month: number): number {
 }
 
 
-
+// [object Object]
+export const judge_type = function(value: any) {
+    if(value === null) return null
+    let type = Object.prototype.toString.call(value).replace('[object ', '').replace(']', '')
+    return type[0].toLowerCase() + type.slice(1)
+}   
