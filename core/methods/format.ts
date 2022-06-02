@@ -1,8 +1,15 @@
+// 格式化日期格式
 
 import { formatNumber, judge_type } from "../utils/basic"
 
+/**
+ * @param { date } year xxxx-xx-xx xx:xx:xx / Date
+ * @param { string } format any
+ * @return { string }
+ */
 
-export const format = function (date: string | Date, format: string) {
+type TYPE_FORMAT = (date: string | Date, format: string) => string
+export const format: TYPE_FORMAT = function (date, format) {
   let date_obj: Date
   if (judge_type(date) === 'string') {
     date_obj = new Date(date)
@@ -10,7 +17,7 @@ export const format = function (date: string | Date, format: string) {
     date_obj = date as Date
   }
 
-  return format.replace(/(yyyy)|(MM)|(dd)|(HH)|(mm)|(ss)/g, function (val){
+  return format.replace(/(yyyy)|(M)|(MM)|(d)|(dd)|(H)|(HH)|(m)|(mm)|(s)|(ss)/g, function (val) {
     if (val === 'yyyy') {
       return date_obj.getFullYear().toString()
     } else if (val === 'M') {
@@ -36,7 +43,5 @@ export const format = function (date: string | Date, format: string) {
     } else {
       return ''
     }
-
   })
-
 }

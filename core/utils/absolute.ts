@@ -1,22 +1,9 @@
 import { formatNumber, getDays, simple_format, computed_week } from "./basic"
-import { getYear, getMonth, getWeek, getDay, getHour, getMinute } from "./based"
-import { getWeeks } from "./week"
-
-
-interface Params_deal_targetDate {
-  scope_type: string,
-  scope_date: string,
-  is_order: boolean,
-  target_type: string,
-  target_num: number
-}
-type Type_deal_targetDate = (options: Params_deal_targetDate) => string
-
-
-
+import { getYear, getMonth, getDay, getHour, getMinute } from "./based"
+import type { TYPE_DEAL_TARGET, FN_ENABLE } from "../types/absolute"
 
 // 处理target子集
-export const deal_targetDate: Type_deal_targetDate = function (options) {
+export const deal_targetDate: TYPE_DEAL_TARGET = function (options) {
 
   let { scope_type, scope_date, is_order, target_type, target_num } = options
 
@@ -54,10 +41,9 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                   date.setTime(date.getTime() - ((24 * 60 * 60 * 1000) * target_num))
                   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
               }
-          } 
-          else if (scope_type === 'week') {
+          } else if (scope_type === 'week') {
             let date = new Date(`${scope_date}`)
-            let weks = get_belong_weeks(date, target_num, is_order)
+            let weks = get_belong_weeks(date)
             return simple_format(generate_weekDate(weks, target_type, target_num, is_order))
           }  else {
               throw new Error('The original type should contain the type expected to be converted!')
@@ -79,7 +65,7 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                   }
               } else if (scope_type === 'week') {
                 let date = new Date(`${scope_date}`)
-                let weks = get_belong_weeks(date, target_num, is_order)
+                let weks = get_belong_weeks(date)
                 return simple_format(generate_weekDate(weks, target_type, target_num, is_order), true)
               }
           }
@@ -99,7 +85,7 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
                   }
               } else if (scope_type === 'week') {
                 let date = new Date(`${scope_date}`)
-                let weks = get_belong_weeks(date, target_num, is_order)
+                let weks = get_belong_weeks(date)
                 return simple_format(generate_weekDate(weks, target_type, target_num, is_order), true)
               }
           }
@@ -117,17 +103,15 @@ export const deal_targetDate: Type_deal_targetDate = function (options) {
               }
           } else if (scope_type === 'week') {
             let date = new Date(`${scope_date}`)
-            let weks = get_belong_weeks(date, target_num, is_order)
+            let weks = get_belong_weeks(date)
             return simple_format(generate_weekDate(weks, target_type, target_num, is_order), true)
           }
   }
   return ''
 }
 
-
-
 // 获取指定时间所在的周数
-const get_belong_weeks = function(date: Date, num: number, is_order: boolean) {
+const get_belong_weeks = function(date: Date) {
     let l_date = date
     let day = date.getDay()
     let weks: string[] = [simple_format(date)]
@@ -160,7 +144,6 @@ const get_belong_weeks = function(date: Date, num: number, is_order: boolean) {
             date = be_date
         }
     }
-    console.log(weks)
     return weks
 }
 
@@ -169,7 +152,6 @@ const get_belong_weeks = function(date: Date, num: number, is_order: boolean) {
 const generate_weekDate = function (weeks: string[], target_type: string, target_num: number, is_order: boolean): Date {
     let date
     let be_weeks = weeks
-    console.log(be_weeks, '<----be_weeks')
     let time_num = 0
     switch (target_type) {
         case 'day':
@@ -198,8 +180,6 @@ const generate_weekDate = function (weeks: string[], target_type: string, target
     }
     return date
 }
-
-
 
 // 处理年月粒度下的周
 const get_targetWeekData = function(date: string, num: number, is_order: boolean) {
@@ -253,8 +233,6 @@ const get_month_from_day = function(year: number, month: number, num: number, is
         }
     }
     
-
-    console.log(res, 'pppppp')
     return `${year}-${formatNumber(month)}-${formatNumber(res)}` 
 }
 
@@ -280,7 +258,6 @@ const get_year_from_day = function(year: number, num: number, is_order: boolean)
                 break
             }
         }
-        
     }
 
     res = first_mon
@@ -296,10 +273,9 @@ const get_year_from_day = function(year: number, num: number, is_order: boolean)
     return `${new_date.getFullYear()}-${formatNumber(new_date.getMonth()+1)}-${formatNumber(new_date.getDate())}`
 }
 
-interface FN_ENABLE {
-    [key: string]: Function, // 字段扩展声明
-};
 
+
+// 定义不同日期类型的处理函数
 let FN_MAP: FN_ENABLE = {
     'year': getYear,
     'month': getMonth,
@@ -308,7 +284,7 @@ let FN_MAP: FN_ENABLE = {
     'minute': getMinute
 }
 
-// 处理
+// 获取范围日期下一个的日期，用于从后往前进行查找
 const choice_get = function (scope_type: string, date: Date) {
     return new Date(FN_MAP[scope_type](date, 1, 'yyyy-MM-dd HH:mm:ss') as string)
 }

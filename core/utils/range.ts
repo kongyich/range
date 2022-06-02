@@ -1,24 +1,11 @@
 import { getDays } from "./basic"
 import { getWeeks } from "./week"
+import type { TYPE_YMRANGE, YEAR, DAY_YEAR, TYPE_BELONG_YEAR } from "../types/range"
 
-interface YEAR_OBJ {
-    [key: number]: string[]
-}
 
-interface YEAR {
-    [key: number]: YEAR_OBJ
-}
-
-// interface WEEK {
-//     [key: number]: YEAR_OBJ
-// }
-
-interface D_YEAR {
-    [key: number]: string[]
-}
 // 获取时间范围
-export const get_ym_range = function (target: string, start: string, end: string): YEAR | D_YEAR {
-    
+export const get_ym_range: TYPE_YMRANGE = function (target, start, end) {
+
     // let { start_date: start, end_date: end } = range
     // 'month' | 'week' | 'day'
     // {
@@ -46,8 +33,8 @@ export const get_ym_range = function (target: string, start: string, end: string
         case 'day':
             let stack = []
             let res: YEAR = {}
-            let d_res: D_YEAR = {}
-            
+            let d_res: DAY_YEAR = {}
+
             let month = belong_year(years, st_month, ed_month)
             let pre = 0
 
@@ -91,46 +78,44 @@ export const get_ym_range = function (target: string, start: string, end: string
 
             return target === 'month' ? res : d_res
         case 'week':
-            console.log(target)
-            console.log(start)
-            
+
             let w_res: YEAR = {}
             let kleng
             let week: string[] = []
             let weeks = getWeeks.run(cope_st_year)
             let key = 1
 
-            for(let i = 0; i < years.length; i++) {
-                
+            for (let i = 0; i < years.length; i++) {
+
                 kleng = Object.keys(weeks)
 
-                if(i === 0) {
-                    for(let wek in weeks) {
+                if (i === 0) {
+                    for (let wek in weeks) {
                         let ds = weeks[wek]
-                        if(ds.indexOf(start) > -1) {
+                        if (ds.indexOf(start) > -1) {
                             week = ds
                             key = Number(wek)
                         }
                     }
 
 
-                    if(week.length < 7) {
-                        if(key === 1) {
+                    if (week.length < 7) {
+                        if (key === 1) {
                             let before_weeks = getWeeks.run(years[i] - 1)
                             let week_ary = Object.keys(before_weeks)
                             key = Number(week_ary[week_ary.length - 1])
-                            
+
                             week = [...before_weeks[Number(week_ary[week_ary.length - 1])], ...week]
-        
+
                             w_res[years[i] - 1] = {
                                 [key]: week
                             }
                         }
-        
-                        if(key === Number(kleng[kleng.length +1])) {
+
+                        if (key === Number(kleng[kleng.length + 1])) {
                             let after_weeks = getWeeks.run(years[i] + 1)
                             let week_ary = Object.keys(after_weeks)
-        
+
                             key = 1
                             week = [...week, ...after_weeks[Number(week_ary[1])]]
                             w_res[years[i] + 1] = {
@@ -143,77 +128,70 @@ export const get_ym_range = function (target: string, start: string, end: string
                         }
                     }
 
-                    if(years.length === 1) {
+                    if (years.length === 1) {
                         let lst_wek: number = 0
-                        for(let wek in weeks) {
+                        for (let wek in weeks) {
                             let ds = weeks[wek]
-                            if(ds.indexOf(end) > -1) {
+                            if (ds.indexOf(end) > -1) {
                                 lst_wek = Number(wek)
                             }
                         }
 
-                        for(let l = key + 1; l <= lst_wek; l++) {
+                        for (let l = key + 1; l <= lst_wek; l++) {
                             w_res[years[i]][l] = weeks[l]
                         }
                     } else {
-                        for(let l = key + 1; l <= Number(kleng[kleng.length - 1]); l++) {
+                        for (let l = key + 1; l <= Number(kleng[kleng.length - 1]); l++) {
                             w_res[years[i]][l] = weeks[l]
                         }
                     }
 
-                    
-                } else if(i === years.length - 1) {
+
+                } else if (i === years.length - 1) {
 
                     let lst_wek: number = 0
-                    if(weeks[1].length < 7) {
+                    if (weeks[1].length < 7) {
                         delete weeks[1]
                     }
 
-                    for(let wek in weeks) {
+                    for (let wek in weeks) {
                         let ds = weeks[wek]
-                        if(ds.indexOf(end) > -1) {
+                        if (ds.indexOf(end) > -1) {
                             lst_wek = Number(wek)
                         }
                     }
 
-                    // console.log(lst_wek, 'lst_wek')
-
-                    if(lst_wek === 0) continue
+                    if (lst_wek === 0) continue
                     w_res[years[i]] = {}
-                    for(let l = (1 in weeks ? 1 : 2); l <= lst_wek; l++) {
+                    for (let l = (1 in weeks ? 1 : 2); l <= lst_wek; l++) {
                         w_res[years[i]][(1 in weeks ? l : l - 1)] = weeks[l]
                     }
 
-                    if(w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)].length < 7) {
+                    if (w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)].length < 7) {
                         w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)] = [...w_res[years[i]][(1 in weeks ? lst_wek : lst_wek - 1)], ...getWeeks.run(years[i + 1])[1]]
                     }
                     break
 
-                } else{
-                    if(weeks[1].length < 7) {
+                } else {
+                    if (weeks[1].length < 7) {
                         delete weeks[1]
                     }
 
                     w_res[years[i]] = {}
 
-                    for(let j = (1 in weeks ? 1 : 2) ; j <= Number(kleng[kleng.length - 1]); j++) {
+                    for (let j = (1 in weeks ? 1 : 2); j <= Number(kleng[kleng.length - 1]); j++) {
                         w_res[years[i]][(1 in weeks ? j : j - 1)] = weeks[j]
                     }
                 }
 
                 let last_key = Object.keys(w_res[years[i]])[Object.keys(w_res[years[i]]).length - 1]
-                    weeks = getWeeks.run(years[i + 1])
+                weeks = getWeeks.run(years[i + 1])
 
-                    if(w_res[years[i]][Number(last_key)].length < 7) {
-                        w_res[years[i]][Number(last_key)] = [...w_res[years[i]][Number(last_key)], ...weeks[1]]
-                    }
+                if (w_res[years[i]][Number(last_key)].length < 7) {
+                    w_res[years[i]][Number(last_key)] = [...w_res[years[i]][Number(last_key)], ...weeks[1]]
+                }
 
             }
-
-            console.log(years)
-            console.log(w_res, 'w_res')
-
-
             return w_res
     }
     return []
@@ -221,7 +199,7 @@ export const get_ym_range = function (target: string, start: string, end: string
 
 
 // // 获取年份列表所有的月
-const belong_year = function (years: number[], st_month: number, ed_month: number) {
+const belong_year: TYPE_BELONG_YEAR = function (years, st_month, ed_month) {
     let month: number[] = []
     for (let i = 0; i < years.length; i++) {
         let mon = []

@@ -1,5 +1,4 @@
-// export * from "./libs/get_date"
-// export * from "./libs/format"
-// export * from "./flow"
-
 export * from "./methods/index"
+
+
+// 更轻量级的时间数据生成器，包含年月周日的时间范围
